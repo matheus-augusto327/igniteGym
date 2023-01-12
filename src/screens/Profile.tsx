@@ -18,6 +18,7 @@ const PHOTO_SIZE = 33;
 
 export function Profile() {
   const [photoIsLoading, setPhotoIsLoading] = useState(true);
+  const [userPhoto, setUserPhoto] = useState("https://matheus-augusto327.png");
 
   async function handleUserPhotoSelect() {
     const photoSelected = await ImagePicker.launchImageLibraryAsync({
@@ -25,11 +26,14 @@ export function Profile() {
       quality: 1,
       aspect: [4, 4],
       allowsEditing: true,
+      selectionLimit: 1,
     });
 
     if (photoSelected.canceled) {
       return;
     }
+
+    setUserPhoto(photoSelected.assets[0].uri);
   }
 
   return (
@@ -47,7 +51,7 @@ export function Profile() {
             />
           ) : (
             <UserPhoto
-              source={{ uri: "https://matheus-augusto327.png" }}
+              source={{ uri: userPhoto }}
               alt="Foto do usuário"
               size={PHOTO_SIZE}
             />
