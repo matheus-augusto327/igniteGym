@@ -53,8 +53,6 @@ export function Home() {
           </Text>
         </HStack>
 
-        <ExerciseCard />
-
         <FlatList
           data={exercises}
           keyExtractor={(item) => item}
