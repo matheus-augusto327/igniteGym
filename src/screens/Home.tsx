@@ -17,7 +17,7 @@ export function Home() {
     "Voador",
     "Roca alternada",
   ]);
-  const [groupSelected, setGroupSelected] = useState("costas");
+  const [groupSelected, setGroupSelected] = useState("Costas");
 
   return (
     <VStack flex={1}>
@@ -29,7 +29,9 @@ export function Home() {
         renderItem={({ item }) => (
           <Group
             name={item}
-            isActive={groupSelected === item}
+            isActive={
+              groupSelected.toLocaleUpperCase() === item.toLocaleUpperCase()
+            }
             onPress={() => setGroupSelected(item)}
           />
         )}
