@@ -18,6 +18,7 @@ export function Hisotrycard() {
           fontSize="md"
           textTransform={"capitalize"}
           numberOfLines={1}
+          fontFamily="heading"
         >
           Costas
         </Heading>
