@@ -49,27 +49,27 @@ export function AppRoutes() {
         name="home"
         component={Home}
         options={{
-          tabBarIcon: ({ color }) => {
-            <HomeSvg fill={color} width={iconSize} height={iconSize} />;
-          },
+          tabBarIcon: ({ color }) => (
+            <HomeSvg fill={color} width={iconSize} height={iconSize} />
+          ),
         }}
       />
       <Screen
         name="history"
         component={History}
         options={{
-          tabBarIcon: ({ color }) => {
-            <HistorySvg fill={color} width={iconSize} height={iconSize} />;
-          },
+          tabBarIcon: ({ color }) => (
+            <HistorySvg fill={color} width={iconSize} height={iconSize} />
+          ),
         }}
       />
       <Screen
         name="profile"
         component={Profile}
         options={{
-          tabBarIcon: ({ color }) => {
-            <ProfileSvg fill={color} width={iconSize} height={iconSize} />;
-          },
+          tabBarIcon: ({ color }) => (
+            <ProfileSvg fill={color} width={iconSize} height={iconSize} />
+          ),
         }}
       />
       <Screen
