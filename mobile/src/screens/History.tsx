@@ -1,5 +1,6 @@
 import { Hisotrycard } from "@components/HistoryCard";
 import { ScreenHeader } from "@components/ScreenHeader";
+import { HistoryByDayDTO } from "@dtos/HistoryByDayDTO";
 import { useFocusEffect } from "@react-navigation/native";
 import { AppError } from "@utils/AppError";
 import { Heading, VStack, SectionList, Text, useToast } from "native-base";
@@ -8,16 +9,7 @@ import { api } from "src/service/api";
 
 export function History() {
   const [isLoading, setIsLoading] = useState(true);
-  const [exercises, setExercises] = useState([
-    {
-      title: "26.02.22",
-      data: ["Puxada frontal", "Remada unilateral"],
-    },
-    {
-      title: "27.02.22",
-      data: ["Puxada frontal"],
-    },
-  ]);
+  const [exercises, setExercises] = useState<HistoryByDayDTO[]>([]);
 
   const toast = useToast();
 
@@ -25,6 +17,7 @@ export function History() {
     try {
       setIsLoading(true);
       const response = await api.get("/history");
+      setExercises(response.data);
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title = isAppError
@@ -49,7 +42,7 @@ export function History() {
 
       <SectionList
         sections={exercises}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => <Hisotrycard />}
         renderSectionHeader={({ section }) => (
           <Heading
