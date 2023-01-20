@@ -1,9 +1,13 @@
 import { Hisotrycard } from "@components/HistoryCard";
 import { ScreenHeader } from "@components/ScreenHeader";
-import { Heading, VStack, SectionList, Text } from "native-base";
-import { useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { AppError } from "@utils/AppError";
+import { Heading, VStack, SectionList, Text, useToast } from "native-base";
+import { useCallback, useState } from "react";
+import { api } from "src/service/api";
 
 export function History() {
+  const [isLoading, setIsLoading] = useState(true);
   const [exercises, setExercises] = useState([
     {
       title: "26.02.22",
@@ -14,6 +18,30 @@ export function History() {
       data: ["Puxada frontal"],
     },
   ]);
+
+  const toast = useToast();
+
+  async function fetchHistory() {
+    try {
+      setIsLoading(true);
+      const response = await api.get("/history");
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : "Não foi possível registrar o histórico.";
+
+      toast.show({ title, placement: "top", bgColor: "red.500" });
+    } finally {
+      setIsLoading(true);
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchHistory();
+    }, [])
+  );
 
   return (
     <VStack flex={1}>
