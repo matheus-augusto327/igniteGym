@@ -18,6 +18,8 @@ import * as FileSystem from "expo-file-system";
 import { useForm } from "react-hook-form/dist/useForm";
 import { Controller } from "react-hook-form/dist/controller";
 import { useAuth } from "@hooks/useAuth";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const PHOTO_SIZE = 33;
 
@@ -29,14 +31,23 @@ type FormDataProps = {
   confirm_password: string;
 };
 
+const profileSchema = yup.object({
+  name: yup.string().required("Informe o nome."),
+});
+
 export function Profile() {
   const [photoIsLoading, setPhotoIsLoading] = useState(true);
   const [userPhoto, setUserPhoto] = useState("https://matheus-augusto327.png");
 
   const toast = useToast();
   const { user } = useAuth();
-  const { control, handleSubmit } = useForm<FormDataProps>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormDataProps>({
     defaultValues: { name: user.name, email: user.email },
+    resolver: yupResolver(profileSchema),
   });
 
   async function handleUserPhotoSelect() {
@@ -120,6 +131,7 @@ export function Profile() {
                 bg="gray.600"
                 onChangeText={onChange}
                 value={value}
+                errorMessage={errors.name?.message}
               />
             )}
           />
@@ -173,6 +185,7 @@ export function Profile() {
                 placeholder="Nova antiga"
                 secureTextEntry
                 onChangeText={onChange}
+                errorMessage={errors.password?.message}
               />
             )}
           />
@@ -186,6 +199,7 @@ export function Profile() {
                 placeholder="Confirme a nova senha"
                 secureTextEntry
                 onChangeText={onChange}
+                errorMessage={errors.confirm_password?.message}
               />
             )}
           />
