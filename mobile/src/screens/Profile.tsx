@@ -61,7 +61,7 @@ export function Profile() {
   const [userPhoto, setUserPhoto] = useState("https://matheus-augusto327.png");
 
   const toast = useToast();
-  const { user } = useAuth();
+  const { user, updateUserProfile } = useAuth();
   const {
     control,
     handleSubmit,
@@ -112,7 +112,13 @@ export function Profile() {
     try {
       setIsUpdating(true);
 
+      const userUpdated = user;
+      userUpdated.name = data.name;
+
       await api.put("/users", data);
+
+      await updateUserProfile(userUpdated);
+
       toast.show({
         title: "Atualizado com sucesso",
         placement: "top",
