@@ -5,8 +5,6 @@ import {
 import { AppError } from "@utils/AppError";
 import axios, { AxiosInstance } from "axios";
 
-type SignOut = () => void;
-
 type PromiseType = {
   resolve: (value?: unknown) => void;
   reject: (reason?: unknown) => void;
@@ -17,8 +15,13 @@ type ProcessQueueParams = {
   token: string | null;
 };
 
+type RegisterInterceptTokenManagerProps = {
+  signOut: () => void;
+  refreshTokenUpdated: (newToken: string) => void;
+};
+
 type APIInstanceProps = AxiosInstance & {
-  registerInterceptTokenManager: (signOut: SignOut) => () => void;
+  registerInterceptTokenManager: ({}: RegisterInterceptTokenManagerProps) => () => void;
 };
 
 const api = axios.create({
@@ -40,7 +43,7 @@ const processQueue = ({ error, token = null }: ProcessQueueParams): void => {
   failedQueue = [];
 };
 
-api.registerInterceptTokenManager = (signOut) => {
+api.registerInterceptTokenManager = ({ signOut, refreshTokenUpdated }) => {
   const interceptTokenManager = api.interceptors.response.use(
     (response) => response,
     async (requestError) => {
@@ -87,6 +90,7 @@ api.registerInterceptTokenManager = (signOut) => {
 
               originalRequest.headers["Authorization"] = `Bearer ${data.token}`;
 
+              refreshTokenUpdated(data.token);
               processQueue({ error: null, token: data.token });
               resolve(originalRequest);
             } catch (error: any) {
