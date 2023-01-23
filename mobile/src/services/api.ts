@@ -4,6 +4,11 @@ import axios, { AxiosInstance } from "axios";
 
 type SignOut = () => void;
 
+type PromiseType = {
+  resolve: (value?: unknown) => void;
+  reject: (reason?: unknown) => void;
+};
+
 type APIInstanceProps = AxiosInstance & {
   registerInterceptTokenManager: (signOut: SignOut) => () => void;
 };
@@ -11,6 +16,9 @@ type APIInstanceProps = AxiosInstance & {
 const api = axios.create({
   baseURL: "http://192.168.15.1:3333",
 }) as APIInstanceProps;
+
+let isRefreshing = false;
+let failedQueue: Array<PromiseType> = [];
 
 api.registerInterceptTokenManager = (signOut) => {
   const interceptTokenManager = api.interceptors.response.use(
@@ -27,6 +35,23 @@ api.registerInterceptTokenManager = (signOut) => {
             signOut();
             return Promise.reject(requestError);
           }
+
+          const originalRequest = requestError.config;
+
+          if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+              failedQueue.push({ resolve, reject });
+            })
+              .then((token) => {
+                originalRequest.header.Authorization = `Bearer ${token}`;
+                return axios(originalRequest);
+              })
+              .catch((error) => {
+                throw error;
+              });
+          }
+
+          isRefreshing = true;
         }
 
         signOut();
