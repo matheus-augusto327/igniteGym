@@ -1,4 +1,7 @@
-import { storageAuthTokenGet } from "@storage/storageAuthToken";
+import {
+  storageAuthTokenGet,
+  storageAuthTokenSave,
+} from "@storage/storageAuthToken";
 import { AppError } from "@utils/AppError";
 import axios, { AxiosInstance } from "axios";
 
@@ -7,6 +10,11 @@ type SignOut = () => void;
 type PromiseType = {
   resolve: (value?: unknown) => void;
   reject: (reason?: unknown) => void;
+};
+
+type ProcessQueueParams = {
+  error: Error | null;
+  token: string | null;
 };
 
 type APIInstanceProps = AxiosInstance & {
@@ -19,6 +27,18 @@ const api = axios.create({
 
 let isRefreshing = false;
 let failedQueue: Array<PromiseType> = [];
+
+const processQueue = ({ error, token = null }: ProcessQueueParams): void => {
+  failedQueue.forEach((request) => {
+    if (error) {
+      request.reject(error);
+    } else {
+      request.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
 
 api.registerInterceptTokenManager = (signOut) => {
   const interceptTokenManager = api.interceptors.response.use(
@@ -43,7 +63,7 @@ api.registerInterceptTokenManager = (signOut) => {
               failedQueue.push({ resolve, reject });
             })
               .then((token) => {
-                originalRequest.header.Authorization = `Bearer ${token}`;
+                originalRequest.headers["Authorization"] = `Bearer ${token}`;
                 return axios(originalRequest);
               })
               .catch((error) => {
@@ -52,6 +72,31 @@ api.registerInterceptTokenManager = (signOut) => {
           }
 
           isRefreshing = true;
+
+          return new Promise(async (resolve, reject) => {
+            try {
+              const { data } = await api.post("/sessions/refresh-token", {
+                token: oldToken,
+              });
+
+              await storageAuthTokenSave(data.token);
+
+              api.defaults.headers.common[
+                "Authorization"
+              ] = `Bearer ${data.token}`;
+
+              originalRequest.headers["Authorization"] = `Bearer ${data.token}`;
+
+              processQueue({ error: null, token: data.token });
+              resolve(originalRequest);
+            } catch (error: any) {
+              processQueue({ error, token: null });
+              signOut();
+              reject(error);
+            } finally {
+              isRefreshing = false;
+            }
+          });
         }
 
         signOut();
