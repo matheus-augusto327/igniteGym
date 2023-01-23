@@ -5,7 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { AppError } from "@utils/AppError";
 import { Heading, VStack, SectionList, Text, useToast } from "native-base";
 import { useCallback, useState } from "react";
-import { api } from "src/service/api";
+import { api } from "@services/api";
 
 export function History() {
   const [isLoading, setIsLoading] = useState(true);

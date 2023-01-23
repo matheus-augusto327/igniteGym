@@ -19,7 +19,7 @@ import SeriesSvg from "@assets/series.svg";
 import RepetitionsSvg from "@assets/repetitions.svg";
 import { Button } from "@components/button";
 import { AppError } from "@utils/AppError";
-import { api } from "src/service/api";
+import { api } from "@services/api";
 import { useEffect, useState } from "react";
 import { ExerciseDTO } from "@dtos/ExerciseDTO";
 import { Loading } from "@components/Loading";

@@ -10,7 +10,7 @@ import {
   storageUserSave,
 } from "@storage/storageUser";
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { api } from "src/service/api";
+import { api } from "@services/api";
 
 export type AuthContextDataProps = {
   user: UserDTO;

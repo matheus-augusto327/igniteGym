@@ -8,7 +8,7 @@ import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { AppError } from "@utils/AppError";
 import { VStack, FlatList, HStack, Heading, Text, useToast } from "native-base";
 import { useCallback, useEffect, useState } from "react";
-import { api } from "src/service/api";
+import { api } from "@services/api";
 
 export function Home() {
   const [isLoading, setIsLoading] = useState(true);

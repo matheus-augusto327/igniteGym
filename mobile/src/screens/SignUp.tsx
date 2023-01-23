@@ -17,7 +17,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import { api } from "src/service/api";
+import { api } from "@services/api";
 import { Alert } from "react-native";
 import { AppError } from "@utils/AppError";
 import { useState } from "react";
